@@ -244,37 +244,85 @@ catch/finally句でawaitを記述できるようになった。
 
 
 ## タプル
-
+C#7.0 からタプルを使えるようになった。
+関数の戻り値で複数の値を取得したいときに役立つ。
 
 使用するには、 NuGet で System.ValueTuple をインストールする必要がある。
 
 ### C#7.0 以降の実装
 
-### C#6.0 以前の実装
+    public (int quontient, int remainder) Divsion(int dividend, int divisor)
+    {
+        int quont = dividend / divisor;
+        int remain = dividend % divisor;
+        return (quont, remain);
+    }
 
+    public void CallDivision1()
+    {
+        var result = Divsion(6, 2);
+        Console.WriteLine($"商：{result.quontient}, 余：{result.remainder}");
+    }
 
-## 出力変数宣言
+## 分解
+タプルを分けて受け取りたい場合に、分解構文が追加された。
+タプルで使用した同関数に対して、戻り値の受け取りを分解構文で受けた場合は下記の実装となる。
 
 ### C#7.0 以降の実装
-
-    public int DeclarationVariable()
+    public void CallDivision2()
     {
-        // C#7.0 以降の実装
-        this.CalcMulti(2, 3, out var y);
-        // C#6.0 以前の実装
-        //int y;
-        //this.CalcMulti(2, 3, out y);
-
-        return y;
+        var (q, r) = Divsion(6, 2);
+        Console.WriteLine($"商：{q}, 余：{r}");
     }
+
+## 値の破棄
+分解するときに、一部の値が不要なときは破棄ができる。
+_を記述すると、値を受け取らずに処理できる。
+
+### C#7.0 以降の実装
+    public void CallDivision3()
+    {
+        var (q, _) = Divsion(6, 2);
+        Console.WriteLine($"商：{q}");
+
+        (_, var r) = Divsion(6, 2);
+        Console.WriteLine($"余：{r}");
+    }
+
+## 出力変数宣言
+出力変数は関数の呼び出し時に宣言できるようになった。
+C#6.0 以前では、関数の呼び出し前に出力変数を宣言して、関数を呼び出していた。
+
+### C#7.0 以降の実装
 
     public void CalcMulti(int x1, int x2, out int y)
     {
         y = x1 * x2;
     }
 
+    public int DeclarationVariable1()
+    {
+        this.CalcMulti(2, 3, out var y);
+
+        return y;
+    }
+
+### C#6.0 以前の実装
+
+    public int DeclarationVariable2()
+    {
+        int y;
+        this.CalcMulti(2, 3, out y);
+
+        return y;
+    }
 
 ## 型スイッチ
+インスタンスの型をswitch句のcaseで分岐できるようになった。
+is演算子、switch句のcaseでキャスト結果を変数で受け取れるようになった。
+
+* caseでis演算子と同じように、インスタンスの型の分岐できる。
+* x is T t、case T tで型が一致していた場合、キャスト結果をtで受け取れる。
 
 ### C#7.0 以降の実装
 
@@ -299,12 +347,11 @@ catch/finally句でawaitを記述できるようになった。
         }
     }
 
-## 値の破棄
-
-### C#7.0 以降の実装
-
-
 ## 参照戻り値と参照ローカル変数
+戻り値とローカル変数でも、参照渡しができるようになった。
+戻り値の型の前、値を渡す側、、値を受ける側それぞれにref修飾子を付けて、記述する。
+
+関数などに大きな値を渡すときにコピーなしに実行できるため、パフォーマンスが向上する。
 
 ### C#7.0 以降の実装
 
@@ -335,6 +382,8 @@ catch/finally句でawaitを記述できるようになった。
 
 
 ## ローカル関数
+関数の中に関数を記述できるようになった。
+ラムダ式に比べて、パフォーマンスの良いコードが生成されるように最適化されている。
 
 ### C#7.0 以降の実装
 
@@ -347,16 +396,40 @@ catch/finally句でawaitを記述できるようになった。
 
 
 ## 非同期メソッドの戻り値に任意の型を使用可
+非同期メソッドの戻り値にValueTask<TResult>が追加された。
 
+非同期メソッドの戻り値は下記のいずれかとなった。
+* void
+* Task
+* Task<TResult>
+* ValueTask<TResult>
+
+特定の条件下で任意の型を非同期メソッドの戻り値として使える。
+有効な例は、例えば、稀に非同期処理となる場合、Task<T>インスタンスの作成を回避する策として使える。
 
 使用するには、 NuGet で System.Threading.Tasks.Extensions をインストールする必要がある。
 
-
-
 ### C#7.0 以降の実装
 
+    public static async ValueTask<int> DoAsync(Random r)
+    {
+        if (r.NextDouble() < 0.99)
+        {
+            // 99%の確率でこちらの処理
+            // awaitがないため、同期処理となる。
+            // 同期処理のため、重い処理であるTask<int>の作成を回避する。
+            return 1;
+        }
+        // 非同期処理のため、Task<int>を作成する。
+        await Task.Delay(100);
+        return 0;
+    }
 
 ## 数値リテラルの改善
+数値リテラルが便利になった。
+追加された機能は下記の2つがある。
+* 2進数リテラル記述できる。
+* _で桁区切りできる。
 
 ### C#7.0 以降の実装
 
@@ -370,8 +443,12 @@ catch/finally句でawaitを記述できるようになった。
         Console.WriteLine(mask2.ToString("X"));
     }
 
-
 ## throw式
+一部の式にthrow式を記述できるようになった。
+記述できるパターンは下記の3つがある。
+* ラムダ式または式形式メンバーの中（=>の後ろ）
+* null合体演算子（??）の後ろ
+* 条件演算子の条件式以外の部分である第2、第3引数（：の前後）
 
 ### C#7.0 以降の実装
 
@@ -385,15 +462,45 @@ catch/finally句でawaitを記述できるようになった。
             throw new InvalidOperationException("too long");
     }
 
-
 ## 式形式メンバーの拡充
+式形式メンバーが増えた。
+使えるメンバーは下記のがある。
+* メソッド（C#6.0 以降）
+* 演算子（C#6.0 以降）
+* プロパティ（C#6.0 以降）
+* インデクサー（get-only）（C#6.0 以降）
+* コンストラクター（C#7.0 以降）
+* デストラクター（C#7.0 以降）
+* イベント（C#7.0 以降）
 
 ### C#7.0 以降の実装
 
-    int param = 0;
-    CSharp7(int p) => param = p;
+    public class MemberTest
+    {
+        private static int x = 0;
+        private Dictionary<int, int> xDictionary = new Dictionary<int, int>():
 
+        public MemberTest() => x = 0;
+        public MemberTest(int p) => x = p;
 
+        public int X
+        {
+            get => x;
+            set => x = value;
+        }
+
+        public int this[int key]
+        {
+            get => xDictionary[key];
+            set => xDictionary[key] = value;
+        }
+
+        public event Action EventTest
+        {
+            add => ++x;
+            remove => --x;
+        }
+    }
 
 # 参考
 
