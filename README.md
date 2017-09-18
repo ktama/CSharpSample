@@ -245,6 +245,9 @@ catch/finally句でawaitを記述できるようになった。
 
 ## タプル
 
+
+使用するには、 NuGet で System.ValueTuple をインストールする必要がある。
+
 ### C#7.0 以降の実装
 
 ### C#6.0 以前の実装
@@ -345,6 +348,11 @@ catch/finally句でawaitを記述できるようになった。
 
 ## 非同期メソッドの戻り値に任意の型を使用可
 
+
+使用するには、 NuGet で System.Threading.Tasks.Extensions をインストールする必要がある。
+
+
+
 ### C#7.0 以降の実装
 
 
@@ -395,3 +403,12 @@ catch/finally句でawaitを記述できるようになった。
 [Build INSIDER C# 6.0で知っておくべき12の新機能](http://www.buildinsider.net/language/csharplang/0600)
 
 [ちょまど帳 C# 6.0の新機能](https://chomado.com/programming/c-sharp/new-features-in-c-sharp-6/)
+
+
+## C# 7.0
+
+[++C++; // 未確認飛行 C C# 7の新機能](http://ufcpp.net/study/csharp/cheatsheet/ap_ver7/)
+
+[Build INSIDER C# 7.0で知っておくべき10の新機能（前編）](http://www.buildinsider.net/language/csharplang/070001)
+
+[Build INSIDER C# 7.0で知っておくべき10の新機能（後編）](http://www.buildinsider.net/language/csharplang/070002)
