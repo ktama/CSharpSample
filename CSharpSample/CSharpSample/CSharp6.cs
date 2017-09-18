@@ -130,7 +130,7 @@ namespace CSharpSample
         // インデックス初期化子
         // ---------------------
         // C#6.0 以降の実装
-        public Dictionary<string, string> GetDictinary()
+        public Dictionary<string, string> GetDictinary1()
         {
             var myDictionary = new Dictionary<string, string>
             {
@@ -138,6 +138,18 @@ namespace CSharpSample
             };
 
             return myDictionary;
+        }
+
+        Dictionary<string, string> GetDictionary2(string x) => new Dictionary<string, string>
+        {
+            ["A"] = x,
+            ["B"] = x + x
+        };
+
+        public Dictionary<string, string> CallDictinary2()
+        {
+
+            return GetDictionary2("a");
         }
 
         // C#5.0 以前の実装

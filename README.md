@@ -6,8 +6,8 @@ C#6、C#7の機能サンプル
 フィールドを別で用意しなくて良いので、自動プロパティをそのまま利用でき、コードの記述量も減る。
 
 初期化子がない場合、下記のいずれかの記述により、初期化を記述する必要がある。
-* プロパティ用にフィールドを用意してフィールドを初期化
-* コンストラクタでプロパティを初期化
+* プロパティ用にフィールドを用意してフィールドを初期化する。
+* コンストラクタでプロパティを初期化する。
 
 ### C#6.0 以降の実装
     public int A { get; set; } = 1;
@@ -90,6 +90,12 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
 
 
 ## 文字列挿入
+文字列を整形するための構文ができた。
+今まで、string.Format()で記述していた整形処理を$で記述できる。
+
+利点は以下の通り。
+* コード量が短くなった。（string.Format → $)
+* 値を埋め込みたい場所にそのまま記述できる。（string.Formatは長い記述や埋め込む値が多い場合、可読性が落ちる。）
 
 ### C#6.0 以降の実装
 
@@ -108,6 +114,12 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
     }
 
 ## nameof演算子
+フィールド、クラス、メソッド、プロパティなどの識別子をnameof演算子で取得できる。
+
+nameofで記述すると、識別子として扱われる。
+すなわち、リネームの対象やコード解析の対象となる。
+
+例えば、デバッグ、Exceptionなどの識別子を文字列で記述していた場合、識別子をリネームして変更漏れになる可能性がある。nameofの場合は、リネームの変更対象となるため、変更漏れのリスクを軽減できる。
 
 ### C#6.0 以降の実装
 
@@ -123,13 +135,16 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
         Console.WriteLine("CallNameOf");
     }
 
-## using statig
+## using static
+using staticを使用すると、静的メンバーをメンバー名だけで参照できる。
+
+Mathクラスなど、静的メンバーを持つクラスに対して、コード量を削減できる。
 
 ### C#6.0 以降の実装
 
+    using static System.Math;
     public void CallStatic()
     {
-        // using static System.Math; // を読み込む
         var pi = Min(1, 2);
     }
 
@@ -141,10 +156,15 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
     }
 
 ## インデックス初期化子
+オブジェクト初期化子にインデクサーを記述できるようになった。
+Dictionaryなどインデックスのあるオブジェクトで使用できる。
+
+特に式しかかけないときに効果的に記述できる。
+例えば、GetDictionary2のようにexpression-bodiedな関数定義で使用することができる。
 
 ### C#6.0 以降の実装
 
-    public Dictionary<string, string> GetDictinary()
+    public Dictionary<string, string> GetDictinary1()
     {
         var myDictionary = new Dictionary<string, string>
         {
@@ -152,6 +172,18 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
         };
 
         return myDictionary;
+    }
+
+    Dictionary<string, string> GetDictionary2(string x) => new Dictionary<string, string>
+    {
+        ["A"] = x,
+        ["B"] = x + x
+    };
+
+    public Dictionary<string, string> CallDictinary2()
+    {
+
+        return GetDictionary2("a");
     }
 
 ### C#5.0 以前の実装
@@ -164,6 +196,8 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
 
 
 ## 例外フィルター
+catch句に条件を記述できるようになった。
+catchした例外に加えて、例外の中身を見て分岐できる。
 
 ### C#6.0 以降の実装
 
@@ -185,6 +219,8 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
     }
 
 ## catch/finally句内でのawait演算子
+catch/finally句でawaitを記述できるようになった。
+例えば、ログの非同期処理をcatch句に記述するなどの用途に使用できる。
 
 ### C#6.0 以降の実装
 
@@ -351,10 +387,11 @@ null演算子はnullのときは、nullを返し、null以外のときはメソ�
 
 
 
-#参考
+# 参考
 
-http://ufcpp.net/study/csharp/ap_ver6.html
+## C# 6.0
+[++C++; // 未確認飛行 C C# 6の新機能](http://ufcpp.net/study/csharp/ap_ver6.html)
 
-http://www.buildinsider.net/language/csharplang/0600
+[Build INSIDER C# 6.0で知っておくべき12の新機能](http://www.buildinsider.net/language/csharplang/0600)
 
-https://chomado.com/programming/c-sharp/new-features-in-c-sharp-6/
+[ちょまど帳 C# 6.0の新機能](https://chomado.com/programming/c-sharp/new-features-in-c-sharp-6/)
